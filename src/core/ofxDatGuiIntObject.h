@@ -80,7 +80,7 @@ class ofxDatGuiInteractiveObject{
         void onButtonEvent(T* owner, void (ListenerClass::*listenerMethod)(args))
         {
             using namespace std::placeholders;
-            buttonEventCallback = std::bind(listenerMethod, owner, _1);
+            buttonEventCallback = std::bind(listenerMethod, owner, std::placeholders::_1);
         }
 
     // slider events //
@@ -91,7 +91,7 @@ class ofxDatGuiInteractiveObject{
         void onSliderEvent(T* owner, void (ListenerClass::*listenerMethod)(args))
         {
             using namespace std::placeholders;
-            sliderEventCallback = std::bind(listenerMethod, owner, _1);
+            sliderEventCallback = std::bind(listenerMethod, owner, std::placeholders::_1);
         }
     
     // text input events //
@@ -102,7 +102,7 @@ class ofxDatGuiInteractiveObject{
         void onTextInputEvent(T* owner, void (ListenerClass::*listenerMethod)(args))
         {
             using namespace std::placeholders;
-            textInputEventCallback = std::bind(listenerMethod, owner, _1);
+            textInputEventCallback = std::bind(listenerMethod, owner, std::placeholders::_1);
         }
     
     // color picker events //
@@ -113,7 +113,7 @@ class ofxDatGuiInteractiveObject{
         void onColorPickerEvent(T* owner, void (ListenerClass::*listenerMethod)(args))
         {
             using namespace std::placeholders;
-            colorPickerEventCallback = std::bind(listenerMethod, owner, _1);
+            colorPickerEventCallback = std::bind(listenerMethod, owner, std::placeholders::_1);
         }
     
     // dropdown events //
@@ -124,7 +124,7 @@ class ofxDatGuiInteractiveObject{
         void onDropdownEvent(T* owner, void (ListenerClass::*listenerMethod)(args))
         {
             using namespace std::placeholders;
-            dropdownEventCallback = std::bind(listenerMethod, owner, _1);
+            dropdownEventCallback = std::bind(listenerMethod, owner, std::placeholders::_1);
         }
     
     // 2d pad events //
@@ -135,7 +135,7 @@ class ofxDatGuiInteractiveObject{
         void on2dPadEvent(T* owner, void (ListenerClass::*listenerMethod)(args))
         {
             using namespace std::placeholders;
-            pad2dEventCallback = std::bind(listenerMethod, owner, _1);
+            pad2dEventCallback = std::bind(listenerMethod, owner, std::placeholders::_1);
         }
     
     // matrix events //
@@ -146,7 +146,7 @@ class ofxDatGuiInteractiveObject{
         void onMatrixEvent(T* owner, void (ListenerClass::*listenerMethod)(args))
         {
             using namespace std::placeholders;
-            matrixEventCallback = std::bind(listenerMethod, owner, _1);
+            matrixEventCallback = std::bind(listenerMethod, owner, std::placeholders::_1);
         }
 
     // internal events //
@@ -157,7 +157,7 @@ class ofxDatGuiInteractiveObject{
         void onInternalEvent(T* owner, void (ListenerClass::*listenerMethod)(args))
         {
             using namespace std::placeholders;
-            internalEventCallback = std::bind(listenerMethod, owner, _1);
+            internalEventCallback = std::bind(listenerMethod, owner, std::placeholders::_1);
         }
 
 };

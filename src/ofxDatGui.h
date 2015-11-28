@@ -84,7 +84,8 @@ class ofxDatGui : public ofxDatGuiInteractiveObject
         ofxDatGuiValuePlotter* getValuePlotter(string label, string folder = "");
         ofxDatGuiFolder* getFolder(string label);
         ofxDatGuiDropdown* getDropdown(string label);
-    
+		bool hitTest(ofPoint pt);
+
     private:
     
         int mGuid;
@@ -120,7 +121,6 @@ class ofxDatGui : public ofxDatGuiInteractiveObject
         void expandGui();
         void collapseGui();
         void moveGui(ofPoint pt);
-        bool hitTest(ofPoint pt);
         void attachItem(ofxDatGuiComponent* item);
         void setGuiAlpha();
         void setGuiWidth();
