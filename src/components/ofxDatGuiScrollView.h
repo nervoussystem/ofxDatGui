@@ -243,7 +243,7 @@ class ofxDatGuiScrollView : public ofxDatGuiComponent {
         void onMouseScrolled(ofMouseEventArgs &e)
         {
             if (children.size() > 0 && mRect.inside(e.x, e.y) == true){
-                float sy = e.scrollY * 2;
+                float sy = e.button * 2;
                 int btnH = children.front()->getHeight() + mSpacing;
                 int minY = mRect.height + mSpacing  - (children.size() * btnH);
                 bool allowScroll = false;
