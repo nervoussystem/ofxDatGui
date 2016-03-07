@@ -21,7 +21,6 @@
 */
 
 #pragma once
-#include "ofColor.h"
 
 class ofxDatGuiButton;
 class ofxDatGuiSlider;
@@ -30,6 +29,7 @@ class ofxDatGuiTextInput;
 class ofxDatGui2dPad;
 class ofxDatGuiColorPicker;
 class ofxDatGuiMatrix;
+class ofxDatGuiScrollView;
 
 enum ofxDatGuiEventType
 {
@@ -118,6 +118,20 @@ class ofxDatGuiDropdownEvent{
     int child;
     int parent;
     ofxDatGuiDropdown* target;
+};
+
+class ofxDatGuiScrollViewEvent{
+
+    public:
+        ofxDatGuiScrollViewEvent(ofxDatGuiScrollView* p, ofxDatGuiButton* b, int i)
+        {
+            index = i;
+            target = b;
+            parent = p;
+        }
+    int index;
+    ofxDatGuiButton* target;
+    ofxDatGuiScrollView* parent;
 };
 
 class ofxDatGui2dPadEvent{

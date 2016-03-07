@@ -11,8 +11,13 @@ class ofApp : public ofBaseApp{
 		void draw();
  
         ofxDatGuiSlider* slider;
-    // change this if you're on a non-retina display //
-        ofxDatGui2880x1800 mTemplate;
-        void onSliderEvent(ofxDatGuiSliderEvent e);
+        ofxDatGuiSlider* sliderInt;
+        ofxDatGuiSlider* sliderFloat;
     
+        ofParameter<int> ofParamInt;
+        ofParameter<float> ofParamFloat;
+    
+        void onParamIntChanged(int & pInt);
+        void onParamFloatChanged(float & pFloat);
+        void onSliderEvent(ofxDatGuiSliderEvent e);
 };

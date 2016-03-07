@@ -21,9 +21,9 @@
 */
 
 #pragma once
+#include "ofxDatGuiThemes.h"
 #include "ofxDatGuiEvents.h"
 #include "ofxDatGuiConstants.h"
-#include "ofxDatGuiTemplates.h"
 
 namespace ofxDatGuiMsg
 {
@@ -61,11 +61,6 @@ inline static float ofxDatGuiScale(float val, float min, float max)
     }   else{
         return (val-min)/(max-min);
     }
-}
-
-inline static bool ofxDatGuiIsRetina()
-{
-    return (ofGetScreenWidth()>=OFXDG_RETINA_MIN_WIDTH && ofGetScreenHeight()>=OFXDG_RETINA_MIN_HEIGHT);
 }
 
 class ofxDatGuiInteractiveObject{
@@ -147,6 +142,17 @@ class ofxDatGuiInteractiveObject{
         {
             using namespace std::placeholders;
             matrixEventCallback = std::bind(listenerMethod, owner, std::placeholders::_1);
+        }
+    
+    // scrollview events //
+        typedef std::function<void(ofxDatGuiScrollViewEvent)> onScrollViewEventCallback;
+        onScrollViewEventCallback scrollViewEventCallback;
+    
+        template<typename T, typename args, class ListenerClass>
+        void onScrollViewEvent(T* owner, void (ListenerClass::*listenerMethod)(args))
+        {
+            using namespace std::placeholders;
+            scrollViewEventCallback = std::bind(listenerMethod, owner, _1);
         }
 
     // internal events //

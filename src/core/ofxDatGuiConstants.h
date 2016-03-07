@@ -21,11 +21,6 @@
 */
 
 #pragma once
-#include "ofMain.h"
-
-static const int OFXDG_RETINA_MIN_WIDTH = 2560;
-static const int OFXDG_RETINA_MIN_HEIGHT = 1600;
-static const string OFXDG_ASSET_DIR = "ofxdatgui_assets";
 
 enum class ofxDatGuiAnchor
 {
@@ -49,18 +44,27 @@ enum class ofxDatGuiAlignment
     RIGHT = 3
 };
 
+enum class ofxDatGuiInputType
+{
+    NUMERIC = 1,
+    ALPHA_NUMERIC = 2,
+    COLORPICKER = 3
+};
+
 enum class ofxDatGuiType
 {
     LABEL = 0,
+    BREAK,
     BUTTON,
     TOGGLE,
     PAD2D,
     HEADER,
     FOOTER,
-    DROPDOWN,
     MATRIX,
     SLIDER,
     FOLDER,
+    DROPDOWN,
+    DROPDOWN_OPTION,
     TEXT_INPUT,
     FRAME_RATE,
     COLOR_PICKER,

@@ -37,14 +37,14 @@ class ofxDatGui : public ofxDatGuiInteractiveObject
         void update();
     
         bool isMoving();
-        void setWidth(int width);
-        void setOrigin(int x, int y);
+        void setWidth(int width, float labelWidth = 0.35f);
         void setVisible(bool visible);
         void setEnabled(bool enabled);
         void setOpacity(float opacity);
-        void setTemplate(ofxDatGuiTemplate* t);
-        void setAlignment(ofxDatGuiAlignment align);
+        void setPosition(int x, int y);
+        void setTheme(ofxDatGuiTheme* t);
         void setAutoDraw(bool autodraw, int priority = 0);
+        void setLabelAlignment(ofxDatGuiAlignment align);
     
         int getWidth();
         int getHeight();
@@ -52,6 +52,7 @@ class ofxDatGui : public ofxDatGuiInteractiveObject
         bool getVisible();
         bool getAutoDraw();
         ofPoint getPosition();
+        ofxDatGuiTheme* getDefaultTheme();
     
         ofxDatGuiHeader* addHeader(string label = "", bool draggable = true);
         ofxDatGuiFooter* addFooter();
@@ -60,10 +61,12 @@ class ofxDatGui : public ofxDatGuiInteractiveObject
         ofxDatGuiToggle* addToggle(string label, bool state = false);
         ofxDatGuiSlider* addSlider(string label, float min, float max);
         ofxDatGuiSlider* addSlider(string label, float min, float max, float val);
+        ofxDatGuiSlider* addSlider(ofParameter<int> & p);
+        ofxDatGuiSlider* addSlider(ofParameter<float> & p);
         ofxDatGuiTextInput* addTextInput(string label, string value = "");
         ofxDatGuiDropdown* addDropdown(string label, vector<string> options);
         ofxDatGuiFRM* addFRM(float refresh = 1.0f);
-        ofxDatGuiBreak* addBreak(int height = 0);
+        ofxDatGuiBreak* addBreak();
         ofxDatGui2dPad* add2dPad(string label);
         ofxDatGui2dPad* add2dPad(string label, ofRectangle bounds);
         ofxDatGuiWaveMonitor* addWaveMonitor(string label, float min, float max);
@@ -71,6 +74,7 @@ class ofxDatGui : public ofxDatGuiInteractiveObject
         ofxDatGuiColorPicker* addColorPicker(string label, ofColor color = ofColor::black);
         ofxDatGuiMatrix* addMatrix(string label, int numButtons, bool showLabels = false);
         ofxDatGuiFolder* addFolder(string label, ofColor color = ofColor::white);
+        ofxDatGuiFolder* addFolder(ofxDatGuiFolder* folder);
     
         ofxDatGuiHeader* getHeader();
         ofxDatGuiFooter* getFooter();
@@ -93,6 +97,7 @@ class ofxDatGui : public ofxDatGuiInteractiveObject
         int mHeight;
         int mRowSpacing;
         float mAlpha;
+        float mLabelWidth;
         bool mMoving;
         bool mVisible;
         bool mEnabled;
@@ -100,20 +105,22 @@ class ofxDatGui : public ofxDatGuiInteractiveObject
         bool mAutoDraw;
         bool mAlphaChanged;
         bool mWidthChanged;
-        bool mTemplateChanged;
+        bool mThemeChanged;
         bool mAlignmentChanged;
+        ofColor mGuiBackground;
     
         ofPoint mPosition;
         ofRectangle mGuiBounds;
         ofxDatGuiAnchor mAnchor;
         ofxDatGuiHeader* mGuiHeader;
         ofxDatGuiFooter* mGuiFooter;
-        ofxDatGuiTemplate* mTemplate;
+        ofxDatGuiTheme* mTheme;
         ofxDatGuiAlignment mAlignment;
         vector<ofxDatGuiComponent*> items;
         vector<ofxDatGuiComponent*> trash;
         static ofxDatGui* mActiveGui;
         static vector<ofxDatGui*> mGuis;
+        static unique_ptr<ofxDatGuiTheme> theme;
     
         void init();
         void layoutGui();
@@ -122,10 +129,6 @@ class ofxDatGui : public ofxDatGuiInteractiveObject
         void collapseGui();
         void moveGui(ofPoint pt);
         void attachItem(ofxDatGuiComponent* item);
-        void setGuiAlpha();
-        void setGuiWidth();
-        void setGuiTemplate();
-        void setGuiAlignment();
     
         void onDraw(ofEventArgs &e);
         void onUpdate(ofEventArgs &e);
