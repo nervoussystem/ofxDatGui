@@ -27,106 +27,119 @@ class ofxDatGui2dPad : public ofxDatGuiComponent {
 
     public:
     
-        ofxDatGui2dPad(string label, ofxDatGuiTemplate* tmplt=nullptr) : ofxDatGuiComponent(label, tmplt)
+        ofxDatGui2dPad(string label) : ofxDatGuiComponent(label)
         {
-            init();
-            mScaleOnResize = true;
-            mBounds = ofRectangle(0, 0, ofGetWidth(), ofGetHeight());
-        }
-    
-        ofxDatGui2dPad(string label, ofRectangle bounds, ofxDatGuiTemplate* tmplt=nullptr) : ofxDatGuiComponent(label, tmplt)
-        {
-            init();
-            mBounds = bounds;
-            mScaleOnResize = false;
-        }
-    
-        static ofxDatGui2dPad* getInstance()
-        {
-            return new ofxDatGui2dPad("X");
-        }
-    
-        ofPoint getPosition()
-        {
-            return pWorld;
-        }
-    
-        void setBounds(ofRectangle bounds)
-        {
-            mBounds = bounds;
-            reset();
-            mScaleOnResize = false;
-        }
-    
-        void init()
-        {
-            reset();
+            mPercentX = 0.5f;
+            mPercentY = 0.5f;
             mType = ofxDatGuiType::PAD2D;
-            mStripeColor = mTemplate->pad2d.color.stripe;
-            mRow.height = mTemplate->pad2d.height;
-            mPad = ofRectangle(0, 0, mRow.width-mRow.padding-mRow.inputX, mRow.height-(mRow.padding*2));
-            setWidth(mRow.width);
+            setTheme(ofxDatGuiComponent::getTheme());
+            setBounds(ofRectangle(0, 0, ofGetWidth(), ofGetHeight()), true);
+            ofAddListener(ofEvents().windowResized, this, &ofxDatGui2dPad::onWindowResized);
+        }
+    
+        ofxDatGui2dPad(string label, ofRectangle bounds) : ofxDatGuiComponent(label)
+        {
+            mPercentX = 0.5f;
+            mPercentY = 0.5f;
+            mType = ofxDatGuiType::PAD2D;
+            setTheme(ofxDatGuiComponent::getTheme());
+            setBounds(bounds, false);
+            ofAddListener(ofEvents().windowResized, this, &ofxDatGui2dPad::onWindowResized);
+        }
+    
+        ~ofxDatGui2dPad()
+        {
+            ofRemoveListener(ofEvents().windowResized, this, &ofxDatGui2dPad::onWindowResized);
+        }
+    
+        void setTheme(const ofxDatGuiTheme* theme)
+        {
+            setComponentStyle(theme);
+            mStyle.height = theme->layout.pad2d.height;
+            mStyle.stripe.color = theme->stripe.pad2d;
+            mColors.line = theme->color.pad2d.line;
+            mColors.ball = theme->color.pad2d.ball;
+            mColors.fill = theme->color.inputAreaBackground;
+            mBallSize = theme->layout.pad2d.ballSize;
+            mLineWeight = theme->layout.pad2d.lineWeight;
+            mPad = ofRectangle(0, 0, mStyle.width - mStyle.padding - mLabel.width, mStyle.height - (mStyle.padding * 2));
+        }
+    
+        void setPoint(ofPoint pt)
+        {
+            if (mBounds.inside(pt)){
+                mPercentX = (pt.x-mBounds.x) / mBounds.width;
+                mPercentY = (pt.y-mBounds.y) / mBounds.height;
+                setWorldCoordinates();
+            }   else{
+        //  the point assigment is outside of the 2d pad's bounds //
+            }
+        }
+    
+        ofPoint getPoint()
+        {
+            return mWorld;
+        }
+    
+        void setBounds(ofRectangle bounds, bool scaleOnResize = false)
+        {
+            mBounds = bounds;
+            mScaleOnResize = scaleOnResize;
+            setWorldCoordinates();
+        }
+    
+        ofRectangle getBounds()
+        {
+            return mBounds;
         }
     
         void reset()
         {
-            mx = 0.5f;
-            my = 0.5f;
-            pWorld.x = mBounds.x + (mBounds.width*mx);
-            pWorld.y = mBounds.y + (mBounds.height*my);
-        }
-    
-        void setOrigin(int x, int y)
-        {
-            ofxDatGuiComponent::setOrigin(x, y);
-            if (mScaleOnResize){
-        // scale the bounds to the resized window //
-                mBounds.width*=(ofGetWidth()/mBounds.width);
-                mBounds.height*=(ofGetHeight()/mBounds.height);
-            }
-        }
-    
-        void setTemplate(ofxDatGuiTemplate* tmplt)
-        {
-            ofxDatGuiComponent::setTemplate(tmplt);
-            mRow.height = mTemplate->pad2d.height;
-            mPad = ofRectangle(0, 0, mRow.width-mRow.padding-mRow.inputX, mRow.height-(mRow.padding*2));
-            setWidth(mRow.width);
+            mPercentX = 0.5f;
+            mPercentY = 0.5f;
+            setWorldCoordinates();
         }
     
         void draw()
         {
             if (!mVisible) return;
             ofPushStyle();
-                mPad.x = x + mRow.inputX;
-                mPad.y = y + mRow.padding;
-                mPad.width = mRow.width-mRow.padding-mRow.inputX;
-                pLocal.x = mPad.x + mPad.width * mx;
-                pLocal.y = mPad.y + mPad.height * my;
-                ofxDatGuiComponent::drawBkgd();
-                ofxDatGuiComponent::drawLabel();
-                ofxDatGuiComponent::drawStripe();
-                ofSetColor(mTemplate->row.color.inputArea);
+                mPad.x = x + mLabel.width;
+                mPad.y = y + mStyle.padding;
+                mPad.width = mStyle.width - mStyle.padding - mLabel.width;
+                mLocal.x = mPad.x + mPad.width * mPercentX;
+                mLocal.y = mPad.y + mPad.height * mPercentY;
+                ofxDatGuiComponent::draw();
+                ofSetColor(mColors.fill);
                 ofDrawRectangle(mPad);
-                ofSetLineWidth(2);
-                ofSetColor(mTemplate->pad2d.color.lines);
-                ofDrawLine(mPad.x, pLocal.y, mPad.x+mPad.width, pLocal.y);
-                ofDrawLine(pLocal.x, mPad.y, pLocal.x, mPad.y+mPad.height);
-                ofSetColor(mTemplate->pad2d.color.circle);
-                ofDrawCircle(pLocal, 10);
+                ofSetLineWidth(mLineWeight);
+                ofSetColor(mColors.line);
+                ofDrawLine(mPad.x, mLocal.y, mPad.x + mPad.width, mLocal.y);
+                ofDrawLine(mLocal.x, mPad.y, mLocal.x, mPad.y + mPad.height);
+                ofSetColor(mColors.ball);
+                ofDrawCircle(mLocal, mBallSize);
             ofPopStyle();
+        }
+    
+        static ofxDatGui2dPad* getInstance() { return new ofxDatGui2dPad("X"); }
+    
+    protected:
+    
+        void setWorldCoordinates()
+        {
+            mWorld.x = mBounds.x + (mBounds.width * mPercentX);
+            mWorld.y = mBounds.y + (mBounds.height * mPercentY);
         }
     
         void onMouseDrag(ofPoint m)
         {
             if (mPad.inside(m)){
-                mx = (m.x-mPad.x)/mPad.width;
-                my = (m.y-mPad.y)/mPad.height;
-                pWorld.x = mBounds.x + (mBounds.width*mx);
-                pWorld.y = mBounds.y + (mBounds.height*my);
+                mPercentX = (m.x-mPad.x) / mPad.width;
+                mPercentY = (m.y-mPad.y) / mPad.height;
+                setWorldCoordinates();
             // dispatch event out to main application //
                 if (pad2dEventCallback != nullptr) {
-                    ofxDatGui2dPadEvent e(this, pWorld.x, pWorld.y);
+                    ofxDatGui2dPadEvent e(this, mWorld.x, mWorld.y);
                     pad2dEventCallback(e);
                 }   else{
                     ofxDatGuiLog::write(ofxDatGuiMsg::EVENT_HANDLER_NULL);
@@ -134,14 +147,31 @@ class ofxDatGui2dPad : public ofxDatGuiComponent {
             }
         }
     
+        void onWindowResized(ofResizeEventArgs &e)
+        {
+        // scale the bounds to the resized window //
+            if (mScaleOnResize){
+                mBounds.width *= (ofGetWidth() / mBounds.width);
+                mBounds.height *= (ofGetHeight() / mBounds.height);
+                setWorldCoordinates();
+            }
+        }
+    
     private:
-        float mx;
-        float my;
-        bool mScaleOnResize;
-        ofPoint pLocal;
-        ofPoint pWorld;
+        ofPoint mLocal;
+        ofPoint mWorld;
         ofRectangle mPad;
         ofRectangle mBounds;
+        float mPercentX;
+        float mPercentY;
+        int mBallSize;
+        int mLineWeight;
+        bool mScaleOnResize;
+        struct{
+            ofColor fill;
+            ofColor line;
+            ofColor ball;
+        } mColors;
     
 };
     

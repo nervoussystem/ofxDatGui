@@ -27,115 +27,109 @@
 class ofxDatGuiTextInput : public ofxDatGuiComponent {
 
     public:
-        ofxDatGuiTextInput(string label, string text = "", ofxDatGuiTemplate* tmplt=nullptr) : ofxDatGuiComponent(label, tmplt)
+    
+        ofxDatGuiTextInput(string label, string text = "") : ofxDatGuiComponent(label)
         {
+            mInput.setText(text);
+            mInput.onInternalEvent(this, &ofxDatGuiTextInput::onInputChanged);
             mType = ofxDatGuiType::TEXT_INPUT;
-            mStripeColor = mTemplate->textInput.color.stripe;
-            input = new ofxDatGuiTextInputField(mRow.height-(mRow.padding*2), mTemplate);
-            input->setText(text);
-            input->setTextInactiveColor(mTemplate->textInput.color.text);
-            input->onInternalEvent(this, &ofxDatGuiTextInput::onInputChanged);
-            setWidth(mRow.width);
+            setTheme(ofxDatGuiComponent::getTheme());
         }
     
-        ~ofxDatGuiTextInput()
+        void setTheme(const ofxDatGuiTheme* theme)
         {
-            delete input;
+            setComponentStyle(theme);
+            mStyle.stripe.color = theme->stripe.textInput;
+            mInput.setTheme(theme);
+            setWidth(theme->layout.width, theme->layout.labelWidth);
         }
     
-        static ofxDatGuiTextInput* getInstance()
+        void setWidth(int width, float labelWidth)
         {
-            return new ofxDatGuiTextInput("X");
+            ofxDatGuiComponent::setWidth(width, labelWidth);
+            mInput.setPosition(x + mLabel.width, y + mStyle.padding);
+            mInput.setWidth(mStyle.width - mStyle.padding - mLabel.width);
         }
     
-        string getText()
+        void setPosition(int x, int y)
         {
-            return input->getText();
+            ofxDatGuiComponent::setPosition(x, y);
+            mInput.setPosition(x + mLabel.width, y + mStyle.padding);
         }
     
         void setText(string text)
         {
-            return input->setText(text);
+            mInput.setText(text);
         }
     
-        void setWidth(int w)
+        string getText()
         {
-            ofxDatGuiComponent::setWidth(w);
-            input->setOrigin(x + mRow.inputX, y + mRow.padding);
-            input->setWidth(mRow.width-mRow.padding-mRow.inputX);
+            return mInput.getText();
         }
     
-        void setTemplate(ofxDatGuiTemplate* tmplt)
+        void setTextUpperCase(bool toUpper)
         {
-            ofxDatGuiComponent::setTemplate(tmplt);
-            input->setTemplate(tmplt);
-            input->setTextInactiveColor(mTemplate->textInput.color.text);
-            setWidth(mRow.width);
+            mInput.setTextUpperCase(toUpper);
         }
     
-        void setOrigin(int x, int y)
+        bool getTextUpperCase()
         {
-            ofxDatGuiComponent::setOrigin(x, y);
-            input->setOrigin(x + mRow.inputX, y + mRow.padding);
+            return mInput.getTextUpperCase();
+        }
+    
+        void setInputType(ofxDatGuiInputType type)
+        {
+            mInput.setTextInputFieldType(type);
         }
     
         void draw()
         {
-            if (!mVisible) return;
-            ofPushStyle();
-                ofxDatGuiComponent::drawBkgd();
-                ofxDatGuiComponent::drawLabel();
-                ofxDatGuiComponent::drawStripe();
-                input->draw();
-            ofPopStyle();
+            if (mVisible){
+                ofxDatGuiComponent::draw();
+                mInput.draw();
+            }
         }
     
         bool hitTest(ofPoint m)
         {
-            return input->hitTest(m);
+            return mInput.hitTest(m);
         }
+    
+        static ofxDatGuiTextInput* getInstance(){ return new ofxDatGuiTextInput("X"); }
+    
+    protected:
 
         void onFocus()
         {
-            input->onFocus();
+            mInput.onFocus();
             ofxDatGuiComponent::onFocus();
         }
     
         void onFocusLost()
         {
-            input->onFocusLost();
+            mInput.onFocusLost();
             ofxDatGuiComponent::onFocusLost();
         }
     
-//        void onMouseLeave(ofPoint m)
-//        {
-//        // override the base call to retain focus //
-//            mMouseOver = false;
-//        }
-    
         void onKeyPressed(int key)
         {
-            if (key != OF_KEY_LEFT &&
-                key != OF_KEY_RIGHT &&
-                key != OF_KEY_UP &&
+            if (key != OF_KEY_UP &&
                 key != OF_KEY_DOWN)
-            input->onKeyPressed(key);
+            mInput.onKeyPressed(key);
         }
-    
-    protected:
     
         virtual void onInputChanged(ofxDatGuiInternalEvent e)
         {
         // dispatch event out to main application //
             if (textInputEventCallback != nullptr) {
-                ofxDatGuiTextInputEvent ev(this, input->getText());
+                ofxDatGuiTextInputEvent ev(this, mInput.getText());
                 textInputEventCallback(ev);
             }   else{
                 ofxDatGuiLog::write(ofxDatGuiMsg::EVENT_HANDLER_NULL);
             }
         }
     
-        ofxDatGuiTextInputField* input;
+        ofxDatGuiTextInputField mInput;
     
 };
 

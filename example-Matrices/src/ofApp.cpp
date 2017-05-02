@@ -11,7 +11,7 @@ void ofApp::setup()
     numCols = 3;
     numRows = 7;
     ofSetWindowPosition(0, 0);
-    font.load("ofxdatgui_assets/font-verdana.ttf", 24);
+    font.load("ofxbraitsch/fonts/Verdana.ttf", 24);
     
 // instantiate a matrix with a button for each box in our grid //
     matrix = new ofxDatGuiMatrix("MATRIX", numCols*numRows, true);
@@ -29,7 +29,7 @@ void ofApp::setup()
 void ofApp::update()
 {
     matrix->update();
-    matrix->setOrigin(ofGetWidth()/2 - matrix->getWidth()/2, ofGetHeight()/2 - matrix->getHeight()/2);
+    matrix->setPosition(ofGetWidth()/2 - matrix->getWidth()/2, ofGetHeight()/2 - matrix->getHeight()/2);
 }
 
 void ofApp::draw()

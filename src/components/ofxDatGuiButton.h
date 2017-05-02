@@ -27,45 +27,51 @@ class ofxDatGuiButton : public ofxDatGuiComponent {
 
     public:
     
-        ofxDatGuiButton(string label, ofxDatGuiTemplate* tmplt=nullptr) : ofxDatGuiComponent(label, tmplt)
+        ofxDatGuiButton(string label) : ofxDatGuiComponent(label)
         {
             mType = ofxDatGuiType::BUTTON;
-            mStripeColor = mTemplate->button.color.stripe;
-            setWidth(mRow.width);
+            setTheme(ofxDatGuiComponent::getTheme());
         }
     
-        static ofxDatGuiButton* getInstance()
+        void setTheme(const ofxDatGuiTheme* theme)
         {
-            return new ofxDatGuiButton("X");
+            setComponentStyle(theme);
+            mStyle.stripe.color = theme->stripe.button;
+            setWidth(theme->layout.width, theme->layout.labelWidth);
         }
     
-        void setOrigin(int x, int y)
+        void setWidth(int width, float labelWidth = 1)
         {
-            ofxDatGuiComponent::setOrigin(x, y);
-            mLabelAreaWidth = mRow.width;
+            ofxDatGuiComponent::setWidth(width, labelWidth);
+            mLabel.width = mStyle.width;
+            mLabel.rightAlignedXpos = mLabel.width - mLabel.margin;
+            ofxDatGuiComponent::positionLabel();
         }
     
         void draw()
         {
-            if (!mVisible) return;
-            ofPushStyle();
-                drawBkgd();
-                ofxDatGuiComponent::drawLabel();
-                ofxDatGuiComponent::drawStripe();
-            ofPopStyle();
-        }
-    
-        void drawBkgd()
-        {
-        // anything that extends ofxDatGuiButton has the same rollover effect //
-            if (mFocused && mMouseDown){
-                ofxDatGuiComponent::drawBkgd(mTemplate->row.color.mouseDown, 255);
-            }   else if (mMouseOver){
-                ofxDatGuiComponent::drawBkgd(mTemplate->row.color.mouseOver, 255);
-            }   else{
-                ofxDatGuiComponent::drawBkgd();
+            if (mVisible) {
+            // anything that extends ofxDatGuiButton has the same rollover effect //
+                ofPushStyle();
+                    if (mStyle.border.visible) drawBorder();
+                    ofFill();
+                    if (mFocused && mMouseDown){
+                        ofSetColor(mStyle.color.onMouseDown, mStyle.opacity);
+                    }   else if (mMouseOver){
+                        ofSetColor(mStyle.color.onMouseOver, mStyle.opacity);
+                    }   else{
+                        ofSetColor(mStyle.color.background, mStyle.opacity);
+                    }
+                    ofDrawRectangle(x, y, mStyle.width, mStyle.height);
+                    drawLabel();
+                    if (mStyle.stripe.visible) drawStripe();
+                ofPopStyle();
             }
         }
+    
+        static ofxDatGuiButton* getInstance() { return new ofxDatGuiButton("X"); }
+    
+    protected:
     
         void onMouseRelease(ofPoint m)
         {
@@ -80,84 +86,88 @@ class ofxDatGuiButton : public ofxDatGuiComponent {
             }
         }
     
-        virtual void toggle(){}
-        virtual void setEnabled(bool enable){}
-        virtual bool getEnabled(){return false;}
-    
 };
 
 class ofxDatGuiToggle : public ofxDatGuiButton {
     
     public:
     
-        ofxDatGuiToggle(string label, bool enabled, ofxDatGuiTemplate* tmplt=nullptr) : ofxDatGuiButton(label, tmplt)
+        ofxDatGuiToggle(string label, bool checked = false) : ofxDatGuiButton(label)
         {
-            mEnabled = enabled;
-            mStripeColor = mTemplate->toggle.color.stripe;
-            if (!radioOn.isAllocated()) radioOn.load(OFXDG_ASSET_DIR+"/icon-radio-on.png");
-            if (!radioOff.isAllocated()) radioOff.load(OFXDG_ASSET_DIR+"/icon-radio-off.png");
+            mChecked = checked;
+            mType = ofxDatGuiType::TOGGLE;
+            setTheme(ofxDatGuiComponent::getTheme());
         }
     
-        void setOrigin(int x, int y)
+        void setTheme(const ofxDatGuiTheme* theme)
         {
-            ofxDatGuiButton::setOrigin(x, y);
-            mLabelMarginRight = mLabelAreaWidth - mIcon.x;
+            setComponentStyle(theme);
+            radioOn = theme->icon.radioOn;
+            radioOff = theme->icon.radioOff;
+            mStyle.stripe.color = theme->stripe.toggle;
+            setWidth(theme->layout.width, theme->layout.labelWidth);
         }
     
-        void setTemplate(ofxDatGuiTemplate* tmplt)
+        void setWidth(int width, float labelWidth = 1)
         {
-            ofxDatGuiButton::setTemplate(tmplt);
-            setWidth(mRow.width);
+            ofxDatGuiComponent::setWidth(width, labelWidth);
+            mLabel.width = mStyle.width;
+            mLabel.rightAlignedXpos = mIcon.x - mLabel.margin;
+            ofxDatGuiComponent::positionLabel();
         }
     
         void toggle()
         {
-            mEnabled =!mEnabled;
+            mChecked = !mChecked;
         }
     
-        void setEnabled(bool enable)
+        void setChecked(bool check)
         {
-            mEnabled = enable;
+            mChecked = check;
         }
     
-        bool getEnabled()
+        bool getChecked()
         {
-            return mEnabled;
+            return mChecked;
         }
 
         void draw()
         {
-            ofxDatGuiButton::drawBkgd();
-            ofxDatGuiComponent::drawLabel();
-            ofxDatGuiComponent::drawStripe();
-            ofPushStyle();
-                ofSetColor(mTemplate->row.color.label);
-                if (mEnabled == true){
-                    radioOn.draw(x+mIcon.x, y+mIcon.y, mIcon.size, mIcon.size);
+            if (mVisible) {
+                ofPushStyle();
+                ofxDatGuiButton::draw();
+                ofSetColor(mIcon.color);
+                if (mChecked == true){
+                    radioOn->draw(x+mIcon.x, y+mIcon.y, mIcon.size, mIcon.size);
                 }   else{
-                    radioOff.draw(x+mIcon.x, y+mIcon.y, mIcon.size, mIcon.size);
+                    radioOff->draw(x+mIcon.x, y+mIcon.y, mIcon.size, mIcon.size);
                 }
-            ofPopStyle();
+                ofPopStyle();
+            }
         }
+    
+        static ofxDatGuiToggle* getInstance() { return new ofxDatGuiToggle("X"); }
+    
+    protected:
     
         void onMouseRelease(ofPoint m)
         {
-            mEnabled = !mEnabled;
+            mChecked = !mChecked;
             ofxDatGuiComponent::onFocusLost();
             ofxDatGuiComponent::onMouseRelease(m);
         // dispatch event out to main application //
-            if (buttonEventCallback != nullptr) {
-                ofxDatGuiButtonEvent e(this, mEnabled);
-                buttonEventCallback(e);
-            }   else{
-                ofxDatGuiLog::write(ofxDatGuiMsg::EVENT_HANDLER_NULL);
+            if (toggleEventCallback == nullptr) {
+        // attempt to call generic button callback //
+                ofxDatGuiButton::onMouseRelease(m);
+            }   else {
+                toggleEventCallback(ofxDatGuiToggleEvent(this, mChecked));
             }
         }
     
     private:
-        bool mEnabled;
-        ofImage radioOn;
-        ofImage radioOff;
+        bool mChecked;
+        shared_ptr<ofImage> radioOn;
+        shared_ptr<ofImage> radioOff;
 
 };
 
