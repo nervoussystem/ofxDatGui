@@ -40,6 +40,10 @@ class ofxDatGuiHeader : public ofxDatGuiButton {
             mStyle.stripe.visible = false;
             mStyle.height = mStyle.height * .8;
             setLabelAlignment(ofxDatGuiAlignment::CENTER);
+			mLabel.color = theme->color.header.text;
+			mStyle.height = theme->layout.header.height;
+			mFont = theme->layout.header.font.ptr;
+			mStyle.color.background = theme->color.header.background;
         }
     
         void setDraggable(bool draggable)
@@ -56,6 +60,29 @@ class ofxDatGuiHeader : public ofxDatGuiButton {
         {
             return mDragOffset;
         }
+
+		void draw()
+		{
+			if (mVisible) {
+				// anything that extends ofxDatGuiButton has the same rollover effect //
+				ofPushStyle();
+				if (mStyle.border.visible) drawBorder();
+				ofFill();
+				/*if (mFocused && mMouseDown) {
+				ofSetColor(mStyle.color.onMouseDown, mStyle.opacity);
+				}
+				else if (mMouseOver) {
+				ofSetColor(mStyle.color.onMouseOver, mStyle.opacity);
+				}
+				else {*/
+				ofSetColor(mStyle.color.background, mStyle.opacity);
+				//}
+				ofDrawRectangle(x, y, mStyle.width, mStyle.height);
+				drawLabel();
+				if (mStyle.stripe.visible) drawStripe();
+				ofPopStyle();
+			}
+		}
     
     protected:
 
@@ -83,7 +110,7 @@ class ofxDatGuiHeader : public ofxDatGuiButton {
     // force header label to always be centered //
         void setLabelAlignment(ofxDatGuiAlignment align)
         {
-            ofxDatGuiComponent::setLabelAlignment(ofxDatGuiAlignment::CENTER);
+           // ofxDatGuiComponent::setLabelAlignment(ofxDatGuiAlignment::CENTER);
         }
     
     private:

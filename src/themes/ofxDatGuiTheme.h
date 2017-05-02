@@ -74,6 +74,7 @@ class ofxDatGuiTheme{
             icon.groupClosed->load(icon.groupClosedPath);
             icon.rainbow->load(icon.rainbowPath);
             font.ptr = ofxSmartFont::add(font.file, font.size);
+			layout.header.font.ptr = ofxSmartFont::add(layout.header.font.file, layout.header.font.size);
         }
     
     /*
@@ -98,6 +99,11 @@ class ofxDatGuiTheme{
                 ofColor fill = ofColor::fromHex(0x2FA1D6);
                 ofColor text = ofColor::fromHex(0x2FA1D6);
             } slider;
+
+			struct {
+				ofColor text = ofColor::fromHex(0x2FA1D6);
+				ofColor background = ofColor(150, 150, 150);
+			} header;
             
             struct {
                 ofColor text = ofColor::fromHex(0x00FF00);
@@ -199,6 +205,15 @@ class ofxDatGuiTheme{
                 int ballSize = 5;
                 int lineWeight = 1;
             } pad2d;
+
+			struct {
+				struct {
+					int size = 40;
+					string file = "ofxbraitsch/fonts/Verdana.ttf";
+					shared_ptr<ofxSmartFont> ptr;
+				} font;
+				int height = 45;
+			} header;
         
             struct {
                 int height = 70;
