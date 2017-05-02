@@ -49,31 +49,24 @@ class ofxDatGuiTheme{
         void init()
         {
             if (ofxDatGuiIsRetina()){
-                font.size *=2;
-                stripe.width *=2;
-                layout.width *=2;
-                layout.height *=2;
-                layout.padding *=2;
-                layout.vMargin *=2;
-                layout.iconSize *=2;
-                layout.labelWidth *=2;
-                layout.labelMargin *=2;
+                font.size *= 2;
+                stripe.width *= 2;
+                layout.width = 540;
+                layout.height *= 2;
+                layout.padding *= 2;
+                layout.vMargin *= 2;
+                layout.iconSize *= 2;
+                layout.labelWidth = 190;
                 layout.graph.height *=2;
                 layout.pad2d.height *=2;
                 layout.pad2d.ballSize *=2;
                 layout.pad2d.lineWeight *=2;
                 layout.matrix.height *=2;
-                layout.matrix.buttonSize *=2;
-                layout.matrix.buttonPadding *=2;
-                layout.colorPicker.rainbowWidth *=2;
-                layout.textInput.highlightPadding *=2;
+                layout.matrix.buttonSize = 47;
+                layout.textInput.highlightPadding *= 2;
             }
-            icon.radioOn->load(icon.radioOnPath);
-            icon.radioOff->load(icon.radioOffPath);
-            icon.groupOpen->load(icon.groupOpenPath);
-            icon.groupClosed->load(icon.groupClosedPath);
-            icon.rainbow->load(icon.rainbowPath);
             font.ptr = ofxSmartFont::add(font.file, font.size);
+			layout.header.font.ptr = ofxSmartFont::add(layout.header.font.file, layout.header.font.size);
         }
     
     /*
@@ -98,6 +91,10 @@ class ofxDatGuiTheme{
                 ofColor fill = ofColor::fromHex(0x2FA1D6);
                 ofColor text = ofColor::fromHex(0x2FA1D6);
             } slider;
+
+			struct {
+				ofColor text = ofColor::fromHex(0x2FA1D6);
+			} header;
             
             struct {
                 ofColor text = ofColor::fromHex(0x00FF00);
@@ -173,15 +170,15 @@ class ofxDatGuiTheme{
         struct {
         
         // general rules that are shared by all components //
-            float width = 270.0f;
+            float width = 320.0f;
             float height = 26.0f;
             float padding = 2.0f;
             float vMargin = 1.0f; // vertical spacing between gui components //
             float iconSize = 10.0f;
-            float labelWidth = 95.0f;
-            float labelMargin = 12.0f;
+            float labelWidth = 115.0f;
+            float labelMargin = 24.0f;
             float breakHeight = 3.0f;
-            bool upperCaseLabels = true;
+            bool upperCaseLabels = false;
             
         // component specific rules & settings //
         
@@ -189,16 +186,21 @@ class ofxDatGuiTheme{
                 int highlightPadding = 5;
                 bool forceUpperCase = true;
             } textInput;
-            
-            struct {
-                int rainbowWidth = 10;
-            } colorPicker;
         
             struct {
                 int height = 82;
                 int ballSize = 5;
                 int lineWeight = 1;
             } pad2d;
+
+			struct {
+				struct {
+					int size =40;
+					string file = "ofxbraitsch/fonts/Verdana.ttf";
+					shared_ptr<ofxSmartFont> ptr;
+				} font;
+				int height = 45;
+			} header;
         
             struct {
                 int height = 70;
@@ -208,8 +210,7 @@ class ofxDatGuiTheme{
         
             struct {
                 int height = 82;
-                int buttonSize = 23;
-                int buttonPadding = 1;
+                int buttonSize = 27;
             } matrix;
             
         } layout;
@@ -218,25 +219,20 @@ class ofxDatGuiTheme{
         typography & icons
     */
     
-        static string AssetPath;
-    
         struct {
             int size = 6;
-            string file = AssetPath + "ofxbraitsch/fonts/Verdana.ttf";
+            string file = "ofxbraitsch/fonts/Verdana.ttf";
             shared_ptr<ofxSmartFont> ptr;
         } font;
+
+
+
     
         struct{
-            shared_ptr<ofImage> rainbow = make_shared<ofImage>();
-            shared_ptr<ofImage> radioOn = make_shared<ofImage>();
-            shared_ptr<ofImage> radioOff = make_shared<ofImage>();
-            shared_ptr<ofImage> groupOpen = make_shared<ofImage>();
-            shared_ptr<ofImage> groupClosed = make_shared<ofImage>();
-            string rainbowPath = AssetPath + "ofxbraitsch/ofxdatgui/picker-rainbow.png";
-            string radioOnPath = AssetPath + "ofxbraitsch/ofxdatgui/icon-radio-on.png";
-            string radioOffPath = AssetPath + "ofxbraitsch/ofxdatgui/icon-radio-off.png";
-            string groupOpenPath = AssetPath + "ofxbraitsch/ofxdatgui/icon-group-open.png";
-            string groupClosedPath = AssetPath + "ofxbraitsch/ofxdatgui/icon-group-closed.png";
+            string rainbow = "ofxbraitsch/ofxdatgui/picker-rainbow.png";
+            string radioOn = "ofxbraitsch/ofxdatgui/icon-radio-on.png";
+            string radioOff = "ofxbraitsch/ofxdatgui/icon-radio-off.png";
+            string dropdown = "ofxbraitsch/ofxdatgui/icon-dropdown.png";
         } icon;
 
         static ofColor hex(int n)
